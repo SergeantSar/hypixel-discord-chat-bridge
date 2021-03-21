@@ -41,7 +41,7 @@ class DiscordManager extends CommunicationBridge {
       channel.send({
         embed: {
           description: message,
-          color: 'F47FFF',
+          color: 'E4FF23',
           timestamp: new Date(),
           footer: {
             text: guildRank,
