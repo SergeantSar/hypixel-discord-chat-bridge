@@ -37,7 +37,7 @@ class MinecraftManager extends CommunicationBridge {
     })
   }
 
-  onBroadcast({ username, message }) {
+  onBroadcast({ username, message, guildRank }) {
     console.log(chalk.blue(`Minecraft Broadcast > ${username}: ${message}`))
 
     if (this.bot.player !== undefined) {

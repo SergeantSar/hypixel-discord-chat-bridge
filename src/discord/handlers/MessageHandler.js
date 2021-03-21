@@ -23,6 +23,7 @@ class MessageHandler {
     this.discord.broadcastMessage({
       username: message.member.displayName,
       message: this.stripDiscordContent(message.content),
+      guildRank: 'Discord',
     })
   }
 
