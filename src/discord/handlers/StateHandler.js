@@ -10,33 +10,47 @@ class StateHandler {
     this.discord.client.user.setActivity('Guild Chat', { type: 'WATCHING' })
 
     if (this.discord.app.config.discord.messageMode == 'webhook') {
-      this.discord.webhook = await getWebhook(this.discord)
+      this.discord.webhooks = {
+        guild: await getWebhook(this.discord, 'guild'),
+        officer: await getWebhook(this.discord, 'officer')
+      }
     }
 
-    this.discord.client.channels.fetch(this.discord.app.config.discord.channel).then(channel => {
-      channel.send({
-        embed: {
-          author: { name: `Chat Bridge is Online` },
-          color: '7CFC00'
-        }
+    ['guild', 'officer'].forEach(type => {
+      this.discord.client.channels.fetch(this.discord.app.config.discord.channels[type]).then(channel => {
+        channel.send({
+          embed: {
+            author: { name: `Chat Bridge is Online` },
+            color: '7CFC00'
+          }
+        })
       })
     })
   }
 
   onClose() {
-    this.discord.client.channels.fetch(this.discord.app.config.discord.channel).then(channel => {
+    this.discord.client.channels.fetch(this.discord.app.config.discord.channels.guild).then(channel => {
       channel.send({
         embed: {
           author: { name: `Chat Bridge is Offline` },
           color: 'DC143C'
         }
-      }).then(() => { process.exit() })
-    })
+      })
+    }).then(() => {
+      this.discord.client.channels.fetch(this.discord.app.config.discord.channels.officer).then(channel => {
+        channel.send({
+          embed: {
+            author: { name: `Chat Bridge is Offline` },
+            color: 'DC143C'
+          }
+        })
+      })
+    }).then(() => { process.exit() }).catch(process.exit())
   }
 }
 
-async function getWebhook(discord) {
-  let channel = discord.client.channels.cache.get(discord.app.config.discord.channel)
+async function getWebhook(discord, channelType) {
+  let channel = discord.client.channels.cache.get(discord.app.config.discord.channels[channelType])
   let webhooks = await channel.fetchWebhooks()
   if (webhooks.first()) {
     return webhooks.first()

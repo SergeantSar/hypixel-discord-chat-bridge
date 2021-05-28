@@ -10,8 +10,11 @@
     "accountType": "mojang"
   },
   "discord": {
-    "token": "discordBotToken",
-    "channel": "channelId",
+    "channels": {
+      "guild": "channelId",
+      "officer": "channelId"
+    },
+    "token": "discordBotToken", 
     "commandRole": "roleId",
     "ownerId": "ownerId",
     "prefix": "!",

@@ -36,11 +36,19 @@ class MinecraftManager extends CommunicationBridge {
     })
   }
 
-  onBroadcast({ username, message, replyingTo }) {
-    console.log(chalk.blue(`Minecraft Broadcast > ${username}: ${message}`))
+  onGuildBroadcast({ username, message, replyingTo }) {
+    console.log(chalk.blue(`Minecraft Guild Broadcast > ${username}: ${message}`))
 
     if (this.bot.player !== undefined) {
       this.bot.chat(`/gc ${replyingTo ? `${username} replying to ${replyingTo}:` : `${username}:`} ${message}`)
+    }
+  }
+
+  onOfficerBroadcast({ username, message, replyingTo }) {
+    console.log(chalk.blue(`Minecraft Officer Broadcast > ${username}: ${message}`))
+
+    if (this.bot.player !== undefined) {
+      this.bot.chat(`/oc ${replyingTo ? `${username} replying to ${replyingTo}:` : `${username}:`} ${message}`)
     }
   }
 }

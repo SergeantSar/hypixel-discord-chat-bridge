@@ -11,8 +11,12 @@ class CommunicationBridge {
     this.bridge = bridge
   }
 
-  broadcastMessage(event) {
-    return this.bridge.onBroadcast(event)
+  broadcastGuildMessage(event) {
+    return this.bridge.onGuildBroadcast(event)
+  }
+
+  broadcastOfficerMessage(event) {
+    return this.bridge.onOfficerBroadcast(event)
   }
 
   broadcastLogin(event) {
@@ -27,7 +31,11 @@ class CommunicationBridge {
     throw new Error('Communication bridge connection is not implemented yet!')
   }
 
-  onBroadcast(event) {
+  onGuildBroadcast(event) {
+    throw new Error('Communication bridge broadcast handling is not implemented yet!')
+  }
+
+  onOfficerBroadcast(event) {
     throw new Error('Communication bridge broadcast handling is not implemented yet!')
   }
 }

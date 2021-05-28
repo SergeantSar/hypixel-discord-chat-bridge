@@ -35,11 +35,11 @@ class DiscordManager extends CommunicationBridge {
     process.on('SIGINT', () => this.stateHandler.onClose())
   }
 
-  onBroadcast({ username, message, guildRank }) {
-    console.log(chalk.blue(`Discord Broadcast > ${username} [${guildRank}]: ${message}`))
+  onGuildBroadcast({ username, message, guildRank }) {
+    console.log(chalk.blue(`Discord Guild Broadcast > ${username} [${guildRank}]: ${message}`))
     switch (this.app.config.discord.messageMode.toLowerCase()) {
       case 'bot':
-        this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {
+        this.app.discord.client.channels.fetch(this.app.config.discord.channels.guild).then(channel => {
           channel.send({
             embed: {
               description: message,
@@ -59,7 +59,41 @@ class DiscordManager extends CommunicationBridge {
 
       case 'webhook':
         message = message.replace(/@/g, '') // Stop pinging @everyone or @here
-        this.app.discord.webhook.send(
+        this.app.discord.webhooks.guild.send(
+          message, { username: username, avatarURL: 'https://www.mc-heads.net/avatar/' + username }
+        )
+        break
+
+      default:
+        throw new Error('Invalid message mode: must be bot or webhook')
+    }
+  }
+
+  onOfficerBroadcast({ username, message, guildRank }) {
+    console.log(chalk.blue(`Discord Officer Broadcast > ${username} [${guildRank}]: ${message}`))
+    switch (this.app.config.discord.messageMode.toLowerCase()) {
+      case 'bot':
+        this.app.discord.client.channels.fetch(this.app.config.discord.channels.officer).then(channel => {
+          channel.send({
+            embed: {
+              description: message,
+              color: '6495ED',
+              timestamp: new Date(),
+              footer: {
+                text: guildRank,
+              },
+              author: {
+                name: username,
+                icon_url: 'https://www.mc-heads.net/avatar/' + username,
+              },
+            },
+          })
+        })
+        break
+
+      case 'webhook':
+        message = message.replace(/@/g, '') // Stop pinging @everyone or @here
+        this.app.discord.webhooks.officer.send(
           message, { username: username, avatarURL: 'https://www.mc-heads.net/avatar/' + username }
         )
         break
@@ -73,7 +107,7 @@ class DiscordManager extends CommunicationBridge {
     console.log(chalk.blue(`Discord Broadcast > ${username} joined`))
     switch (this.app.config.discord.messageMode.toLowerCase()) {
       case 'bot':
-        this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {
+        this.app.discord.client.channels.fetch(this.app.config.discord.channels.guild).then(channel => {
           channel.send({
             embed: {
               color: '7CFC00',
@@ -88,7 +122,7 @@ class DiscordManager extends CommunicationBridge {
         break
 
       case 'webhook':
-        this.app.discord.webhook.send({
+        this.app.discord.webhooks.guild.send({
           username: username, avatarURL: 'https://www.mc-heads.net/avatar/' + username, embeds: [{
             color: '7CFC00',
             author: {
@@ -107,7 +141,7 @@ class DiscordManager extends CommunicationBridge {
     console.log(chalk.blue(`Discord Broadcast > ${username} left`))
     switch (this.app.config.discord.messageMode.toLowerCase()) {
       case 'bot':
-        this.app.discord.client.channels.fetch(this.app.config.discord.channel).then(channel => {
+        this.app.discord.client.channels.fetch(this.app.config.discord.channels.guild).then(channel => {
           channel.send({
             embed: {
               color: 'DC143C',
@@ -122,7 +156,7 @@ class DiscordManager extends CommunicationBridge {
         break
 
       case 'webhook':
-        this.app.discord.webhook.send({
+        this.app.discord.webhooks.guild.send({
           username: username, avatarURL: 'https://www.mc-heads.net/avatar/' + username, embeds: [{
             color: 'DC143C',
             author: {

@@ -36,7 +36,7 @@ class StateHandler extends EventHandler {
       return this.minecraft.broadcastLogout(user)
     }
 
-    if (!this.isGuildMessage(message)) {
+    if (!(this.isGuildMessage(message) || this.isOfficerMessage(message))) {
       return
     }
 
@@ -61,11 +61,19 @@ class StateHandler extends EventHandler {
       return
     }
 
-    this.minecraft.broadcastMessage({
-      username: username,
-      message: playerMessage,
-      guildRank: guildRank,
-    })
+    if (this.isGuildMessage(message)) {
+      this.minecraft.broadcastGuildMessage({
+        username: username,
+        message: playerMessage,
+        guildRank: guildRank,
+      })
+    } else {
+      this.minecraft.broadcastOfficerMessage({
+        username: username,
+        message: playerMessage,
+        guildRank: guildRank,
+      })
+    }
   }
 
   isMessageFromBot(username) {
@@ -78,6 +86,10 @@ class StateHandler extends EventHandler {
 
   isGuildMessage(message) {
     return message.startsWith('Guild >') && message.includes(':')
+  }
+
+  isOfficerMessage(message) {
+    return message.startsWith('Officer >') && message.includes(':')
   }
 
   isLoginMessage(message) {
